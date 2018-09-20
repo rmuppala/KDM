@@ -82,10 +82,10 @@ public class CoreNLP {
             for(int i = 0; i <sent.nerTags().size(); i++) {
 
                 //Condition: if the word is a noun (posTag starts with "NN")
-                if (sent.nerTag(i) != null ) {
+                if (sent.nerTag(i) != null && (!sent.nerTag(i).equals("O")) ) {
                     //Put the word into the Set
                     //System.out.println(("noun = " +sent.word(i) ));
-                    nerstr.append(sent.nerTag(i) + ",");
+                    nerstr.append(sent.word(i) + ":" + sent.nerTag(i) + ",");
                 }
             }
         }
