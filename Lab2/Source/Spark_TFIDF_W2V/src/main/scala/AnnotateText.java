@@ -33,6 +33,7 @@ public class AnnotateText {
     public static String getMedWords(String line) throws Exception {
 
         String urlParameters;
+
         JsonNode annotations;
         //line = URLEncoder.encode("Melanoma is a malignant tumor of melanocytes which are found predominantly in skin but also in the bowel and the eye.", "ISO-8859-1");
 
@@ -40,6 +41,45 @@ public class AnnotateText {
         //System.out.println(line);
         String textToAnnotate = URLEncoder.encode(line);
         StringBuffer words = new StringBuffer();
+        StringBuffer ontology = new StringBuffer();
+        // Get just annotations
+
+        urlParameters = "text=" + textToAnnotate;
+        System.out.println("Get Med Words 2" +   REST_URL + "/annotator?" + urlParameters);
+        annotations = jsonToNode(get(REST_URL + "/annotator?" + urlParameters));
+
+        for (JsonNode annotation : annotations) {
+
+            try {
+                JsonNode classDetails = jsonToNode(get(annotation.get("annotatedClass").get("links").get("self").asText()));
+                if (classDetails != null) {
+                    words.append(classDetails.get("prefLabel").asText() + ",");
+
+                    System.out.println("\tontology: " + classDetails.get("links").get("ontology").asText());
+                    ontology.append(classDetails.get("links").get("ontology").asText() + "," );
+                }
+
+            }
+            catch( Exception ex)
+            {
+
+            }
+        }
+        System.out.println("med words " + words.toString() + "|" + ontology.toString());
+        return words.toString() + "|" + ontology.toString() ;
+    }
+
+    public static String getOntology(String line) throws Exception {
+
+        String urlParameters;
+        JsonNode annotations;
+
+        //line = URLEncoder.encode("Melanoma is a malignant tumor of melanocytes which are found predominantly in skin but also in the bowel and the eye.", "ISO-8859-1");
+
+        // line = URLEncoder.encode("Melanoma", "ISO-8859-1");
+        //System.out.println(line);
+        String textToAnnotate = URLEncoder.encode(line);
+        StringBuffer ontology = new StringBuffer();
         // Get just annotations
 
         urlParameters = "text=" + textToAnnotate;
@@ -51,7 +91,7 @@ public class AnnotateText {
             try {
                 JsonNode classDetails = jsonToNode(get(annotation.get("annotatedClass").get("links").get("self").asText()));
                 if (classDetails != null)
-                    words.append(classDetails.get("prefLabel").asText() + "," );
+                    ontology.append(classDetails.get("ontology").asText() + "," );
 
 
             }
@@ -60,8 +100,8 @@ public class AnnotateText {
 
             }
         }
-        System.out.println("med words " + words.toString());
-        return words.toString();
+        System.out.println("med words " + ontology.toString());
+        return ontology.toString();
     }
 
     private static JsonNode jsonToNode(String json) {

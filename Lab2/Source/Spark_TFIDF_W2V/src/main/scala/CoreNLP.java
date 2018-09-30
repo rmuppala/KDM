@@ -17,7 +17,7 @@ public class CoreNLP {
             for (int i = 0; i < l.size() ; i++) {
                 lemma+= l.get(i) +" ";
             }
-            System.out.println(lemma);
+            //System.out.println(lemma);
         }
 
         return lemma;
